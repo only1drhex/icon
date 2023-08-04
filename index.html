@@ -4,10 +4,23 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Expo Icon Generator</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
-  <input type="file" id="imagePicker" accept="image/*">
-  <button onclick="generateImages()">Generate Images</button>
+    <header class="container mt-3">
+    <h1 class="text-center">Expo App Icons Generator</h1>
+  </header>
+  <div class="container mt-5">
+    <div class="row">
+      <div class="col-md-6">
+        <input type="file" id="imagePicker" accept="image/*" class="form-control">
+      </div>
+      <div class="col-md-6">
+        <button onclick="generateImages()" class="btn btn-primary">Generate Images</button>
+      </div>
+    </div>
+  </div>
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.6.0/jszip.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
   <script>
@@ -56,7 +69,6 @@
 
         const ctx = canvas.getContext("2d");
 
-        // draw color
         ctx.fillStyle = color;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -68,11 +80,9 @@
           const emojiSize = size - emojiPadding * 2;
           const emojiOffset = (size - emojiSize) / 2;
           const imageSource = await loadImageAsync(emojiUrl);
-          // draw image
           ctx.drawImage(imageSource, emojiOffset, emojiOffset, emojiSize, emojiSize);
         }
 
-        // defaults to PNG with no loss
         resolve(canvas.toDataURL());
       });
     }
@@ -104,8 +114,8 @@
     }
 
     async function generateImages() {
-      const emojiId = null; // Set the emoji ID if needed
-      const color = "#ffffff"; // Set the desired color
+      const emojiId = null;
+      const color = "#ffffff";
       const imagePicker = document.getElementById("imagePicker");
       const image = imagePicker.files[0];
 
@@ -141,9 +151,9 @@
         const adaptiveIcon = await generateAdaptiveIcon({
           foregroundImage: URL.createObjectURL(image),
           backgroundColor: color,
-          backgroundImage: null, // Set to URL of the background image if needed
-          monochromeImage: null, // Set to URL of the monochrome image if needed
-          size: 1024, // Set the desired size for adaptive-icon.png
+          backgroundImage: null,
+          monochromeImage: null,
+          size: 1024,
         });
 
         const iconB64 = imageUriToBase64(icon);
@@ -177,33 +187,27 @@
       monochromeImage,
       size,
     }) {
-      // Add the provided adaptive icon generation logic here
       const BASELINE_PIXEL_SIZE = 1024;
       const canvas = document.createElement("canvas");
       canvas.width = size;
       canvas.height = size;
       const ctx = canvas.getContext("2d");
 
-      // Draw adaptive-icon background
       ctx.fillStyle = backgroundColor;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Load foreground and background images
       const foreground = await loadImageAsync(foregroundImage);
       const background = backgroundImage ? await loadImageAsync(backgroundImage) : null;
 
-      // Draw adaptive-icon foreground image
       const foregroundSize = BASELINE_PIXEL_SIZE * 0.75;
       const foregroundOffset = (size - foregroundSize) / 2;
       ctx.drawImage(foreground, foregroundOffset, foregroundOffset, foregroundSize, foregroundSize);
 
       if (background) {
-        // Draw adaptive-icon background image
         const backgroundSize = BASELINE_PIXEL_SIZE;
         ctx.drawImage(background, 0, 0, backgroundSize, backgroundSize);
       }
 
-      // defaults to PNG with no loss
       return canvas.toDataURL();
     }
   </script>
